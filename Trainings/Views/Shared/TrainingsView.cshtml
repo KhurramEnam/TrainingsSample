@@ -1,0 +1,93 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>TrainingsView</title>
+    <script src="~/Scripts/angular.min.js"></script>
+   
+    <script language="javascript" >
+        function TrainingsViewModel($scope,$http) {
+
+            $scope.Trainings = {
+                "TrainingName": "",
+                "StartDate": "",
+                "EndDate": ""
+
+            };
+
+            $scope.Add = function () {
+                $http({ method: "POST", data: $scope.Trainings, url: "/api/Trainings/PostTrainings" }).
+                    then(function (data) {
+                        alert("Training has been added successfully.")
+                    });
+            }
+
+
+            $scope.checkErr = function(startDate,endDate){
+                            $scope.errMessage = '';
+                            $scope.curDate = new Date();
+
+                            if(startDate < endDate){
+                              $scope.errMessage = 'End Date should be greate than start date';
+                              return false;
+                            }
+                            if(startDate < curDate){
+                               $scope.errMessage = 'Start date should not be before today.';
+                               return false;
+                            }
+
+                          };
+        }
+
+        var app = angular.module("myApp", []);
+        app.controller("TrainingsViewModel", TrainingsViewModel);
+
+    </script>
+</head>
+
+<body ng-app="myApp">
+    <form name="myform">
+
+        <table ng-controller="TrainingsViewModel">
+            <tr>
+                <td>
+                    Training Name
+                </td>
+                <td>
+                    <input id="txtTrainingName" type="text" ng-model="Trainings.TrainingName" ng-required="please enter training name" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Start Date
+                </td>
+                <td>
+                    <input id="dteStartDate" type="date" ng-model="Trainings.StartDate" ng-required="please enter start date" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    End Date
+                </td>
+                <td>
+                    <input id="dteEndDate" type="date" ng-model="Trainings.EndDate" ng-change='checkErr(startDate,endDate)' ng-required="please enter end date" />
+                    <span>{{errMessage}}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <input id="btnAddTrainings" type="button" value="Add Training" ng-click="myform.$valid && Add()" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+</body>
+</html>
